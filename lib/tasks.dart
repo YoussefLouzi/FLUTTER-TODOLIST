@@ -34,12 +34,18 @@ class _TasksState extends State<Tasks> {
     ),
   ];
 
+  Future<void> _addTask(Task task) async {
+    await Future.delayed(Duration(seconds: 2));
+    setState(() {
+      _registeredTasks.add(task);
+    });
+    Navigator.pop(context);
+  }
+
   void _openAddTaskOverlay() {
     showModalBottomSheet(
       context: context,
-      useSafeArea: true,
-      isScrollControlled: true,
-      builder: (ctx) => const NewTask(),
+      builder: (ctx) => NewTask(onAddTask: _addTask),
     );
   }
 

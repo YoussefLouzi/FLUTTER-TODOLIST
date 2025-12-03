@@ -4,6 +4,7 @@
 \usepackage{geometry}
 \usepackage{xcolor}
 \usepackage{fancyhdr}
+\usepackage{url}
 
 \geometry{margin=2.5cm}
 \pagestyle{fancy}
@@ -32,7 +33,8 @@
     \begin{tabular}{ll}
         \textbf{Étudiant :} & Youssef LOUZI \\[0.5cm]
         \textbf{Date :} & \today \\[0.5cm]
-        \textbf{Module :} & Développement Mobile
+        \textbf{Module :} & Développement Mobile \\[0.5cm]
+        \textbf{Repository :} & \url{https://github.com/YoussefLouzi/FLUTTER-TODOLIST}
     \end{tabular}
     
     \vfill
@@ -75,10 +77,10 @@ final empêche de modifier les propriétés après création. C'est plus sûr et
 \subsection*{10. Pourquoi TasksList est StatelessWidget}
 TasksList ne fait qu'afficher les données qu'on lui donne. Elle ne gère pas d'état interne, juste l'affichage. Plus simple et plus performant.
 
-\subsection*{11. À quoi sert la flèche =>}
-C'est une syntaxe courte pour les fonctions simples. Au lieu d'écrire \{return ...\}, j'écris juste => ... C'est plus compact.
+\subsection*{11. À quoi sert la flèche $\Rightarrow$}
+C'est une syntaxe courte pour les fonctions simples. Au lieu d'écrire \{return ...\}, j'écris juste $\Rightarrow$ ... C'est plus compact.
 
-\subsection*{12. Code sans =>}
+\subsection*{12. Code sans $\Rightarrow$}
 \begin{verbatim}
 itemBuilder: (ctx, index) {
   return Text(tasks[index].title);
@@ -112,5 +114,7 @@ Je préfère le contrôleur. C'est plus performant car ça ne reconstruit pas le
 
 \section*{Conclusion}
 Ce TP m'a appris les bases de Flutter. J'ai compris comment organiser le code, gérer l'état et créer une interface utilisateur. L'architecture avec les widgets séparés rend le code plus propre et maintenable.
+
+Le code source complet est disponible sur GitHub : \url{https://github.com/YoussefLouzi/FLUTTER-TODOLIST}
 
 \end{document}

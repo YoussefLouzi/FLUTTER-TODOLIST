@@ -1,0 +1,270 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{url}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{graphicx}
+
+\geometry{margin=2.5cm}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{teal}{\textbf{TP4 - Flutter TodoList Avancée}}}
+\fancyhead[R]{\textcolor{teal}{\thepage}}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{teal}\leaders\hrule height \headrulewidth\hfill}}
+
+% Définition des couleurs
+\definecolor{primarycolor}{RGB}{0, 128, 128}
+\definecolor{secondarycolor}{RGB}{255, 140, 0}
+\definecolor{lightgray}{RGB}{245, 245, 245}
+\definecolor{darkgray}{RGB}{64, 64, 64}
+
+% Style pour les boîtes de questions/réponses
+\newtcolorbox{questionbox}{
+    colback=blue!5,
+    colframe=primarycolor,
+    boxrule=1.5pt,
+    arc=4pt,
+    left=8pt,
+    right=8pt,
+    top=8pt,
+    bottom=8pt,
+    fonttitle=\bfseries,
+    title=Question
+}
+
+\newtcolorbox{answerbox}{
+    colback=orange!5,
+    colframe=secondarycolor,
+    boxrule=1.5pt,
+    arc=4pt,
+    left=8pt,
+    right=8pt,
+    top=8pt,
+    bottom=8pt,
+    fonttitle=\bfseries,
+    title=Réponse
+}
+
+\newtcolorbox{codebox}{
+    colback=lightgray,
+    colframe=darkgray,
+    boxrule=1pt,
+    arc=2pt,
+    left=8pt,
+    right=8pt,
+    top=8pt,
+    bottom=8pt,
+    fonttitle=\bfseries
+}
+
+\begin{document}
+
+% Page de titre moderne
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    % Titre principal avec style moderne
+    {\Huge\color{primarycolor}\textbf{TP4}}
+    
+    \vspace{0.8cm}
+    {\LARGE\color{darkgray} Ajouter une nouvelle tâche}
+    
+    \vspace{0.3cm}
+    {\Large\color{darkgray} à la TodoList Flutter}
+    
+    \vspace{3cm}
+    
+    % Informations dans un cadre élégant
+    \begin{tcolorbox}[colback=primarycolor!10, colframe=primarycolor, boxrule=2pt, arc=8pt, width=0.7\textwidth]
+        \centering
+        \begin{tabular}{ll}
+            \textbf{Étudiant :} & Youssef LOUZI \\[0.4cm]
+            \textbf{Date :} & \today \\[0.4cm]
+            \textbf{Module :} & Développement Mobile \\[0.4cm]
+            \textbf{Objectif :} & Communication entre widgets \\[0.4cm]
+            \textbf{Repository :} & \url{https://github.com/YoussefLouzi/FLUTTER-TODOLIST}
+        \end{tabular}
+    \end{tcolorbox}
+    
+    \vfill
+    
+    % Ligne de séparation élégante
+    \textcolor{primarycolor}{\rule{0.8\textwidth}{2pt}}
+    
+\end{titlepage}
+
+\newpage
+
+\section*{Introduction}
+
+L'objectif de ce TP4 est d'apprendre à faire communiquer les widgets entre eux. Je vais implémenter l'ajout de nouvelles tâches en utilisant des callbacks, des listes déroulantes et la programmation asynchrone.
+
+\section*{Développement}
+
+\subsection*{1. Ajout de la liste déroulante}
+
+J'ai modifié le formulaire NewTask pour ajouter un DropdownButton permettant de choisir la catégorie.
+
+\begin{codebox}[title=Code DropdownButton]
+\begin{verbatim}
+DropdownButton<Category>(
+  value: _selectedCategory,
+  items: Category.values.map((category) {
+    return DropdownMenuItem(
+      value: category,
+      child: Text(category.name),
+    );
+  }).toList(),
+  onChanged: (value) {
+    setState(() {
+      _selectedCategory = value!;
+    });
+  },
+)
+\end{verbatim}
+\end{codebox}
+
+\begin{questionbox}
+Quel est le rôle de map() et toList() ?
+\end{questionbox}
+
+\begin{answerbox}
+map() transforme chaque élément de l'énumération Category en DropdownMenuItem. toList() convertit le résultat en liste concrète que le DropdownButton peut utiliser.
+\end{answerbox}
+
+\begin{questionbox}
+Différence entre value et child dans DropdownMenuItem ?
+\end{questionbox}
+
+\begin{answerbox}
+value contient la donnée logique (l'objet Category) utilisée par le programme. child contient le widget visuel (Text) affiché à l'utilisateur.
+\end{answerbox}
+
+\subsection*{2. Communication parent-enfant}
+
+J'ai créé une fonction callback pour permettre au widget NewTask d'ajouter une tâche dans le widget parent Tasks.
+
+\begin{codebox}[title=Méthode d'ajout dans Tasks]
+\begin{verbatim}
+void _addTask(Task task) {
+  setState(() {
+    _registeredTasks.add(task);
+  });
+  Navigator.pop(context);
+}
+\end{verbatim}
+\end{codebox}
+
+\begin{questionbox}
+Pourquoi passer la fonction \_addTask au widget NewTask ?
+\end{questionbox}
+
+\begin{answerbox}
+Pour permettre au widget enfant de déclencher une modification d'état dans le widget parent. C'est le pattern callback en Flutter.
+\end{answerbox}
+
+\begin{questionbox}
+Que signifie widget.onAddTask() ?
+\end{questionbox}
+
+\begin{answerbox}
+Cela permet d'accéder à la fonction onAddTask définie dans la classe Widget depuis la classe State correspondante.
+\end{answerbox}
+
+\subsection*{3. Gestion de l'opérateur !}
+
+\begin{questionbox}
+À quoi sert l'opérateur "!" dans \_selectedCategory = value! ?
+\end{questionbox}
+
+\begin{answerbox}
+C'est l'opérateur de "non-null assertion". Il dit à Dart que je certifie que value ne sera pas null à ce moment, évitant une erreur de compilation.
+\end{answerbox}
+
+\begin{questionbox}
+Alternative pour éviter "!" ?
+\end{questionbox}
+
+\begin{answerbox}
+Je peux utiliser une condition : if (value != null) { \_selectedCategory = value; } pour vérifier la nullité avant l'affectation.
+\end{answerbox}
+
+\subsection*{4. Programmation asynchrone}
+
+J'ai ajouté une simulation de latence réseau avec Future.delayed.
+
+\begin{codebox}[title=Code asynchrone]
+\begin{verbatim}
+Future<void> _submitTaskData() async {
+  // Validation...
+  
+  // Simulation latence réseau
+  await Future.delayed(Duration(seconds: 1));
+  
+  widget.onAddTask(Task(
+    title: _titleController.text,
+    description: 'Description par défaut',
+    date: DateTime.now(),
+    category: _selectedCategory!,
+  ));
+}
+\end{verbatim}
+\end{codebox}
+
+\begin{questionbox}
+Que représente un Future ?
+\end{questionbox}
+
+\begin{answerbox}
+Un Future représente une valeur qui n'est pas encore disponible mais le sera dans le futur, comme une réponse d'API ou de base de données.
+\end{answerbox}
+
+\begin{questionbox}
+Pourquoi utiliser async/await ?
+\end{questionbox}
+
+\begin{answerbox}
+Pour effectuer des opérations longues sans bloquer l'interface utilisateur, gardant l'application fluide pendant le chargement.
+\end{answerbox}
+
+\subsection*{5. Rôle de setState()}
+
+\begin{questionbox}
+Pourquoi nous avons ajouté ce code à votre avis ?
+\end{questionbox}
+
+\begin{answerbox}
+Ce code établit une communication parent-enfant entre widgets. Le widget parent (Tasks) contient la liste des tâches et doit la mettre à jour, tandis que le widget enfant (NewTask) est le formulaire de création qui doit informer le parent. Le mécanisme de callback permet au NewTask d'appeler widget.onAddTask(task) qui déclenche \_addTask dans le parent, mettant à jour la liste avec setState() et fermant automatiquement le modal avec Navigator.pop(context).
+\end{answerbox}
+
+\begin{questionbox}
+Quel est le rôle de setState() dans \_addTask ?
+\end{questionbox}
+
+\begin{answerbox}
+Il notifie Flutter que l'état a changé, déclenchant la reconstruction de l'interface pour afficher la nouvelle tâche dans la liste.
+\end{answerbox}
+
+\vspace{1cm}
+\textcolor{primarycolor}{\rule{\textwidth}{1pt}}
+
+\section*{Conclusion}
+
+Ce TP4 m'a appris les concepts avancés de Flutter :
+- Communication entre widgets via callbacks
+- Utilisation des DropdownButton pour les sélections
+- Gestion de la nullité avec l'opérateur !
+- Bases de la programmation asynchrone avec Future/async/await
+
+Ces concepts sont essentiels pour créer des applications Flutter interactives et performantes.
+
+\vspace{0.5cm}
+\textbf{Code source :} \url{https://github.com/YoussefLouzi/FLUTTER-TODOLIST}
+
+\end{document}
