@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "834105979952",
+    "project_id": "taskapp-2fd49",
+    "storage_bucket": "taskapp-2fd49.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:834105979952:android:1b7f22a3a769a40b6129f5",
+        "android_client_info": {
+          "package_name": "com.example.todolist_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdXIOLBmsj9ZbM8jpgtHqZnR1wL_Yy1-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

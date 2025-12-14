@@ -1,17 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:todolist_app/tasks.dart';
+import 'package:todolist_app/firebase_options.dart';
+import 'package:todolist_app/application.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      title: 'Flutter TodoList',
-      theme: ThemeData(
-        appBarTheme: const AppBarTheme(elevation: 0),
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const Tasks(),
-      debugShowCheckedModeBanner: false,
-    ),
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
   );
+  runApp(const MyApp());
 }

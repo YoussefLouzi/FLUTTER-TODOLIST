@@ -1,0 +1,295 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{url}
+\usepackage{tcolorbox}
+\usepackage{listings}
+
+\geometry{margin=2.5cm}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{teal}{\textbf{TP4 - Communication entre Widgets}}}
+\fancyhead[R]{\textcolor{teal}{\thepage}}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{teal}\leaders\hrule height \headrulewidth\hfill}}
+
+% Définition des couleurs
+\definecolor{primarycolor}{RGB}{0, 128, 128}
+\definecolor{secondarycolor}{RGB}{255, 140, 0}
+\definecolor{lightgray}{RGB}{245, 245, 245}
+\definecolor{darkgray}{RGB}{64, 64, 64}
+
+% Style pour les boîtes
+\newtcolorbox{questionbox}{
+    colback=blue!5,
+    colframe=primarycolor,
+    boxrule=1.5pt,
+    arc=4pt,
+    left=8pt,
+    right=8pt,
+    top=8pt,
+    bottom=8pt,
+    fonttitle=\bfseries,
+    title=Question
+}
+
+\newtcolorbox{answerbox}{
+    colback=orange!5,
+    colframe=secondarycolor,
+    boxrule=1.5pt,
+    arc=4pt,
+    left=8pt,
+    right=8pt,
+    top=8pt,
+    bottom=8pt,
+    fonttitle=\bfseries,
+    title=Réponse
+}
+
+\newtcolorbox{codebox}{
+    colback=lightgray,
+    colframe=darkgray,
+    boxrule=1pt,
+    arc=2pt,
+    left=8pt,
+    right=8pt,
+    top=8pt,
+    bottom=8pt,
+    fonttitle=\bfseries
+}
+
+\begin{document}
+
+% Page de titre
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Huge\color{primarycolor}\textbf{TP4}}
+    
+    \vspace{0.8cm}
+    {\LARGE\color{darkgray} Communication entre Widgets}
+    
+    \vspace{0.3cm}
+    {\Large\color{darkgray} Flutter TodoList Avancée}
+    
+    \vspace{3cm}
+    
+    \begin{tcolorbox}[colback=primarycolor!10, colframe=primarycolor, boxrule=2pt, arc=8pt, width=0.7\textwidth]
+        \centering
+        \begin{tabular}{ll}
+            \textbf{Étudiant :} & Youssef LOUZI \\[0.4cm]
+            \textbf{Date :} & \today \\[0.4cm]
+            \textbf{Module :} & Développement Mobile \\[0.4cm]
+            \textbf{Objectif :} & Callbacks et Programmation Asynchrone \\[0.4cm]
+            \textbf{Repository :} & \url{https://github.com/YoussefLouzi/FLUTTER-TODOLIST}
+        \end{tabular}
+    \end{tcolorbox}
+    
+    \vfill
+    
+    \textcolor{primarycolor}{\rule{0.8\textwidth}{2pt}}
+    
+\end{titlepage}
+
+\newpage
+
+\section*{Introduction}
+
+Ce TP4 se concentre sur la communication entre widgets Flutter et l'implémentation de fonctionnalités avancées comme les callbacks, les listes déroulantes et la programmation asynchrone pour créer une application TodoList interactive.
+
+\section*{Développement}
+
+\subsection*{1. Communication Parent-Enfant via Callbacks}
+
+J'ai implémenté un système de callback pour permettre au widget enfant NewTask de communiquer avec le widget parent Tasks.
+
+\begin{codebox}[title=Constructeur NewTask avec Callback]
+\begin{verbatim}
+class NewTask extends StatefulWidget {
+  const NewTask({
+    super.key,
+    required this.onAddTask,
+  });
+  
+  final void Function(Task task) onAddTask;
+}
+\end{verbatim}
+\end{codebox}
+
+\begin{questionbox}
+Pourquoi utiliser un callback au lieu d'une variable globale ?
+\end{questionbox}
+
+\begin{answerbox}
+Les callbacks respectent l'architecture Flutter en gardant les données dans le widget parent. Cela évite les effets de bord et rend le code plus maintenable et testable.
+\end{answerbox}
+
+\subsection*{2. Implémentation du DropdownButton}
+
+J'ai ajouté une liste déroulante pour sélectionner la catégorie des tâches.
+
+\begin{codebox}[title=DropdownButton pour les Catégories]
+\begin{verbatim}
+DropdownButton<Category>(
+  value: _selectedCategory,
+  items: Category.values.map((category) => 
+    DropdownMenuItem<Category>(
+      value: category,
+      child: Text(category.name.toUpperCase()),
+    )).toList(),
+  onChanged: (value) {
+    if (value == null) return;
+    setState(() {
+      _selectedCategory = value;
+    });
+  },
+)
+\end{verbatim}
+\end{codebox}
+
+\begin{questionbox}
+Pourquoi vérifier si value == null avant l'affectation ?
+\end{questionbox}
+
+\begin{answerbox}
+C'est une pratique de sécurité. Même si le DropdownButton ne devrait pas renvoyer null, cette vérification évite les erreurs d'exécution et rend le code plus robuste.
+\end{answerbox}
+
+\subsection*{3. Gestion des Contrôleurs de Texte}
+
+J'ai ajouté un contrôleur pour le champ description en plus du titre.
+
+\begin{codebox}[title=Contrôleurs et Dispose]
+\begin{verbatim}
+class _NewTaskState extends State<NewTask> {
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+}
+\end{verbatim}
+\end{codebox}
+
+\begin{questionbox}
+Pourquoi est-il important d'appeler dispose() sur les contrôleurs ?
+\end{questionbox}
+
+\begin{answerbox}
+Pour libérer la mémoire et éviter les fuites mémoire. Les contrôleurs maintiennent des listeners qui doivent être nettoyés quand le widget est détruit.
+\end{answerbox}
+
+\subsection*{4. Programmation Asynchrone}
+
+J'ai rendu la fonction d'ajout de tâche asynchrone pour simuler une opération de base de données.
+
+\begin{codebox}[title=Fonction Asynchrone]
+\begin{verbatim}
+Future<void> _addTask(Task task) async {
+  await Future.delayed(Duration(seconds: 2));
+  setState(() {
+    _registeredTasks.add(task);
+  });
+  Navigator.pop(context);
+}
+\end{verbatim}
+\end{codebox}
+
+\begin{questionbox}
+Quel est l'avantage de Future.delayed() dans ce contexte ?
+\end{questionbox}
+
+\begin{answerbox}
+Cela simule une latence réseau réaliste. Dans une vraie application, l'ajout en base de données prend du temps. Cette simulation permet de tester le comportement asynchrone sans vraie base de données.
+\end{answerbox}
+
+\begin{questionbox}
+Que se passe-t-il pendant les 2 secondes d'attente ?
+\end{questionbox}
+
+\begin{answerbox}
+L'interface utilisateur reste réactive grâce à async/await. L'utilisateur peut continuer à interagir avec l'application pendant que l'opération s'exécute en arrière-plan.
+\end{answerbox}
+
+\subsection*{5. Validation et Gestion d'Erreurs}
+
+J'ai implémenté une validation du formulaire avec affichage d'erreur.
+
+\begin{codebox}[title=Validation du Formulaire]
+\begin{verbatim}
+void _submitTaskData() {
+  if (_titleController.text.trim().isEmpty) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Erreur'),
+        content: const Text('Merci de saisir le titre de la tâche'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Okay'),
+          ),
+        ],
+      ),
+    );
+    return;
+  }
+  
+  widget.onAddTask(Task(
+    title: _titleController.text,
+    description: _descriptionController.text,
+    date: DateTime(2023, 10, 16, 14, 30),
+    category: _selectedCategory,
+  ));
+}
+\end{verbatim}
+\end{codebox}
+
+\begin{questionbox}
+Pourquoi utiliser trim() sur le texte ?
+\end{questionbox}
+
+\begin{answerbox}
+trim() supprime les espaces en début et fin de chaîne. Cela évite qu'un utilisateur puisse créer une tâche avec seulement des espaces, ce qui serait considéré comme valide sans trim().
+\end{answerbox}
+
+\section*{Architecture et Bonnes Pratiques}
+
+\subsection*{Séparation des Responsabilités}
+- \textbf{Tasks} : Gère la liste et l'état global
+- \textbf{NewTask} : Gère uniquement le formulaire
+- \textbf{TasksList} : Affiche les données reçues
+
+\subsection*{Gestion de l'État}
+- Utilisation de \texttt{setState()} pour les mises à jour d'interface
+- Callbacks pour la communication ascendante
+- Contrôleurs pour la gestion des champs de texte
+
+\subsection*{Programmation Asynchrone}
+- \texttt{Future<void>} pour les opérations sans retour
+- \texttt{async/await} pour un code lisible
+- Simulation de latence pour tester le comportement réel
+
+\section*{Conclusion}
+
+Ce TP4 m'a permis de maîtriser :
+- La communication entre widgets via callbacks
+- L'implémentation de DropdownButton avec gestion de null
+- La programmation asynchrone avec Future et async/await
+- La validation de formulaires et gestion d'erreurs
+- Les bonnes pratiques de gestion mémoire avec dispose()
+
+Ces concepts sont essentiels pour développer des applications Flutter robustes et performantes avec une architecture claire et maintenable.
+
+\vspace{0.5cm}
+\textbf{Code source :} \url{https://github.com/YoussefLouzi/FLUTTER-TODOLIST}
+
+\end{document}
